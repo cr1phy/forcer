@@ -1,0 +1,116 @@
+syntax = "proto3";
+package blazer.message;
+
+import "google/protobuf/timestamp.proto";
+
+// Сервис сообщений
+service MessageService {
+  // Отправка сообщения
+  rpc SendMessage(MessageRequest) returns (MessageResponse);
+  
+  // Получение сообщений (стрим)
+  rpc ReceiveMessages(ReceiveMessagesRequest) returns (stream Message);
+  
+  // Получение истории сообщений
+  rpc GetMessageHistory(MessageHistoryRequest) returns (MessageHistoryResponse);
+  
+  // Отметка о прочтении
+  rpc MarkAsRead(MarkAsReadRequest) returns (StatusResponse);
+}
+
+// Типы медиа
+enum MediaType {
+  MEDIA_TYPE_NONE = 0;
+  MEDIA_TYPE_IMAGE = 1;
+  MEDIA_TYPE_VIDEO = 2;
+  MEDIA_TYPE_VOICE = 3;
+  MEDIA_TYPE_FILE = 4;
+  MEDIA_TYPE_CIRCLE = 5;
+}
+
+// Стили текста
+enum TextStyle {
+  TEXT_STYLE_NONE = 0;
+  TEXT_STYLE_BOLD = 1;
+  TEXT_STYLE_ITALIC = 2;
+  TEXT_STYLE_CODE = 3;
+  TEXT_STYLE_QUOTE = 4;
+  TEXT_STYLE_LINK = 5;
+}
+
+// Сообщение
+message Message {
+  string id = 1;
+  string from = 2;
+  string to = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string text = 5;
+  MediaContent media = 6;
+  bool is_encrypted = 7;
+  bool is_secret = 8;
+  uint64 delete_after = 9;
+  repeated TextStyle styles = 10;
+}
+
+// Медиа-контент
+message MediaContent {
+  MediaType type = 1;
+  bytes data = 2;
+  string caption = 3;
+  string filename = 4;
+  uint64 duration = 5;
+  string emoji = 6;
+}
+
+// Запрос на отправку сообщения
+message MessageRequest {
+  string from = 1;
+  string to = 2;
+  string text = 3;
+  MediaContent media = 4;
+  bool is_secret = 5;
+  uint64 delete_after = 6;
+  repeated TextStyle styles = 7;
+}
+
+// Ответ на отправку сообщения
+message MessageResponse {
+  string message_id = 1;
+  bool success = 2;
+  string error = 3;
+}
+
+// Запрос на получение сообщений
+message ReceiveMessagesRequest {
+  string user_id = 1;
+  string token = 2;
+}
+
+// Запрос на получение истории
+message MessageHistoryRequest {
+  string user_id = 1;
+  string chat_id = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+  string token = 5;
+}
+
+// Ответ с историей сообщений
+message MessageHistoryResponse {
+  repeated Message messages = 1;
+  bool has_more = 2;
+  int32 total = 3;
+}
+
+// Запрос на отметку о прочтении
+message MarkAsReadRequest {
+  string user_id = 1;
+  repeated string message_ids = 2;
+  string token = 3;
+}
+
+// Общий ответ о статусе
+message StatusResponse {
+  bool success = 1;
+  string message = 2;
+}
