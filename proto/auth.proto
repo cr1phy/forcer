@@ -1,0 +1,66 @@
+syntax = "proto3";
+package blazer;
+
+import "google/protobuf/timestamp.proto";
+
+// Сервис аккаунтов
+service AccountService {
+  // Регистрация пользователя
+  rpc Signup(SignupRequest) returns (AuthResponse);
+  
+  // Вход в аккаунт
+  rpc Login(LoginRequest) returns (AuthResponse);
+  
+  // Выход из аккаунта
+  rpc Logout(LogoutRequest) returns (StatusResponse);
+  
+  // Удаление аккаунта
+  rpc DeleteAccount(DeleteAccountRequest) returns (StatusResponse);
+  
+  // Удаление сессии
+  rpc DeleteSession(DeleteSessionRequest) returns (StatusResponse);
+}
+
+// Запрос на регистрацию
+message SignupRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+// Запрос на вход
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// Ответ с токеном авторизации
+message AuthResponse {
+  string token = 1;
+  string session_id = 2;
+  bool success = 3;
+  string error_message = 4;
+}
+
+// Запрос на выход
+message LogoutRequest {
+  string token = 1;
+  string session_id = 2;
+}
+
+// Запрос на удаление аккаунта
+message DeleteAccountRequest {
+  string token = 1;
+}
+
+// Запрос на удаление сессии
+message DeleteSessionRequest {
+  string token = 1;
+  string session_id = 2;
+}
+
+// Ответ со статусом операции
+message StatusResponse {
+  bool success = 1;
+  string message = 2;
+}

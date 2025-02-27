@@ -1,0 +1,15 @@
+syntax = "proto3";
+package blazer;
+
+// Сервис для здоровья и статуса
+service HealthService {
+  // Проверка статуса сервера
+  rpc Status(StatusRequest) returns (StatusResponse);
+}
+
+// Запрос статуса
+message StatusRequest {}
+
+message StatusResponse {
+    int32 status = 1;
+}
